@@ -98,13 +98,13 @@ python3 --version
    http://localhost:5000
    ```
 
-<img src="screenshots/terminal-startup.png" alt="Security Guarantees" width="650"/>
+<img src="screenshots/terminal-startup.png" alt="Security Guarantees" width="600"/>
 
 ## 🎮 Usage Guide
 
 ### 1. Key Generation
 
-<img src="screenshots/key-generation.png" alt="Security Guarantees" width="650"/>
+<img src="screenshots/key-generation.png" alt="Security Guarantees" width="600"/>
 
 - Enter a username (e.g., "Alice")
 - Select key size:
@@ -116,7 +116,7 @@ python3 --version
 
 ### 2. Message Signing
 
-<img src="screenshots/message-signing.png" alt="Security Guarantees" width="650"/>
+<img src="screenshots/message-signing.png" alt="Security Guarantees" width="600"/>
 
 - Select the signer from the dropdown
 - Enter your message in the text area
@@ -125,7 +125,7 @@ python3 --version
 
 ### 3. Signature Verification
 
-<img src="screenshots/signature-verification.png" alt="Security Guarantees" width="650"/>
+<img src="screenshots/signature-verification.png" alt="Security Guarantees" width="600"/>
 
 - Select the signer (public key owner)
 - Enter the original message
