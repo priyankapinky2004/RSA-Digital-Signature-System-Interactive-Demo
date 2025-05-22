@@ -7,6 +7,7 @@ A comprehensive web-based demonstration of RSA Digital Signature implementation 
 ## 🎯 Overview
 
 This system demonstrates how RSA digital signatures work in practice, allowing users to:
+
 - Generate RSA key pairs with custom key sizes
 - Sign messages using private keys
 - Verify signatures using public keys
@@ -59,12 +60,14 @@ python3 --version
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/yourusername/rsa-digital-signature-system.git
+   git clone https://github.com/priyankapinky2004/RSA-Digital-Signature-System-Interactive-Demo.git
    cd rsa-digital-signature-system
    ```
 
 2. **Create a virtual environment** (recommended)
+
    ```bash
    # Windows
    python -m venv venv
@@ -76,11 +79,13 @@ python3 --version
    ```
 
 3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Run the application**
+
    ```bash
    python app.py
    # or
@@ -88,8 +93,9 @@ python3 --version
    ```
 
 5. **Access the application**
-   
+
    Open your web browser and navigate to:
+
    ```
    http://localhost:5000
    ```
@@ -142,6 +148,7 @@ The system implements the following security guarantees:
 ## 🧮 Mathematical Implementation
 
 ### RSA Key Generation
+
 1. Generate two random prime numbers (p, q)
 2. Compute n = p × q
 3. Calculate φ(n) = (p-1) × (q-1)
@@ -149,20 +156,21 @@ The system implements the following security guarantees:
 5. Compute d = e⁻¹ mod φ(n)
 
 ### Digital Signature Process
+
 1. **Signing**: signature = (hash(message))^d mod n
 2. **Verification**: hash = signature^e mod n
 3. **Compare**: computed_hash == received_hash
 
 ## 📡 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Serve main interface |
-| POST | `/api/generate-keys` | Generate RSA key pair |
-| POST | `/api/sign-message` | Sign a message |
-| POST | `/api/verify-signature` | Verify a signature |
-| GET | `/api/get-users` | Get all users |
-| GET | `/api/get-user/<name>` | Get specific user details |
+| Method | Endpoint                | Description               |
+| ------ | ----------------------- | ------------------------- |
+| GET    | `/`                     | Serve main interface      |
+| POST   | `/api/generate-keys`    | Generate RSA key pair     |
+| POST   | `/api/sign-message`     | Sign a message            |
+| POST   | `/api/verify-signature` | Verify a signature        |
+| GET    | `/api/get-users`        | Get all users             |
+| GET    | `/api/get-user/<name>`  | Get specific user details |
 
 ### Example API Usage
 
@@ -186,12 +194,14 @@ curl -X POST http://localhost:5000/api/verify-signature \
 ## 🎯 Demo Scenarios
 
 ### Scenario 1: Successful Verification
+
 1. Alice generates keys
 2. Alice signs message "Hello, this is a secure message!"
 3. Bob verifies using Alice's public key
 4. ✅ Verification succeeds
 
 ### Scenario 2: Tampered Message Detection
+
 1. Alice generates keys and signs a message
 2. Message is modified during transmission
 3. Bob attempts verification with original signature
@@ -265,6 +275,7 @@ app.run(debug=True, host='0.0.0.0', port=5000)
 ### Common Issues
 
 1. **Port Already in Use**
+
    ```bash
    # Kill process using port 5000
    lsof -ti:5000 | xargs kill -9
@@ -273,12 +284,14 @@ app.run(debug=True, host='0.0.0.0', port=5000)
    ```
 
 2. **Module Import Errors**
+
    ```bash
    # Reinstall dependencies
    pip install --force-reinstall -r requirements.txt
    ```
 
 3. **Key Generation Slow**
+
    - Use smaller key sizes for testing
    - Larger keys (2048-bit) may take several seconds
 
@@ -289,6 +302,7 @@ app.run(debug=True, host='0.0.0.0', port=5000)
 ### Debug Mode
 
 Enable verbose logging by setting:
+
 ```python
 app.config['DEBUG'] = True
 ```
@@ -349,7 +363,7 @@ If you encounter any issues or have questions:
 
 ## 🎓 Educational Resources
 
-- [RSA Algorithm Explained](https://en.wikipedia.org/wiki/RSA_(cryptosystem))
+- [RSA Algorithm Explained](<https://en.wikipedia.org/wiki/RSA_(cryptosystem)>)
 - [Digital Signatures](https://en.wikipedia.org/wiki/Digital_signature)
 - [Modular Arithmetic](https://en.wikipedia.org/wiki/Modular_arithmetic)
 - [Prime Number Generation](https://en.wikipedia.org/wiki/Prime_number)
