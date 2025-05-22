@@ -141,7 +141,7 @@ The system implements the following security guarantees:
 - **Integrity**: Detects any tampering with the original message
 - **Non-repudiation**: Signer cannot deny signing the message
 
-<img src="screenshots/security-guarantees.png" alt="Security Guarantees" width="300"/>
+<img src="screenshots/security-guarantees.png" alt="Security Guarantees" width="500"/>
 
 ## 🧮 Mathematical Implementation
 
