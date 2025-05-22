@@ -98,13 +98,13 @@ python3 --version
    http://localhost:5000
    ```
 
-![Application Running](screenshots/terminal-startup.png)
+<img src="screenshots/terminal-startup.png" alt="Security Guarantees" width="650"/>
 
 ## 🎮 Usage Guide
 
 ### 1. Key Generation
 
-![Key Generation Interface](screenshots/key-generation.png)
+<img src="screenshots/key-generation.png" alt="Security Guarantees" width="650"/>
 
 - Enter a username (e.g., "Alice")
 - Select key size:
@@ -116,7 +116,7 @@ python3 --version
 
 ### 2. Message Signing
 
-![Message Signing](screenshots/message-signing.png)
+<img src="screenshots/message-signing.png" alt="Security Guarantees" width="650"/>
 
 - Select the signer from the dropdown
 - Enter your message in the text area
@@ -125,7 +125,7 @@ python3 --version
 
 ### 3. Signature Verification
 
-![Signature Verification](screenshots/signature-verification.png)
+<img src="screenshots/signature-verification.png" alt="Security Guarantees" width="650"/>
 
 - Select the signer (public key owner)
 - Enter the original message
@@ -141,7 +141,7 @@ The system implements the following security guarantees:
 - **Integrity**: Detects any tampering with the original message
 - **Non-repudiation**: Signer cannot deny signing the message
 
-<img src="screenshots/security-guarantees.png" alt="Security Guarantees" width="500"/>
+<img src="screenshots/security-guarantees.png" alt="Security Guarantees" width="650"/>
 
 ## 🧮 Mathematical Implementation
 
