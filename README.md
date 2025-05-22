@@ -205,6 +205,8 @@ curl -X POST http://localhost:5000/api/verify-signature \
 3. Bob attempts verification with original signature
 4. ❌ Verification fails - tampering detected
 
+🌐 **Live Demo:** [https://deluxe-daffodil-226fdd.netlify.app](https://deluxe-daffodil-226fdd.netlify.app)
+
 ## 🔧 Development
 
 ### Project Structure Details

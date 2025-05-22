@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Digital Signature System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4f46e5;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #4f46e5;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-box.success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .result-box.error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .key-display {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+
+        .key-display h4 {
+            color: #60a5fa;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.success {
+            background: #10b981;
+        }
+
+        .status-indicator.error {
+            background: #ef4444;
+        }
+
+        .status-indicator.warning {
+            background: #f59e0b;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .verification-result {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .verification-result.valid {
+            background: #dcfce7;
+            color: #166534;
+            border: 2px solid #bbf7d0;
+        }
+
+        .verification-result.invalid {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 2px solid #fecaca;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .explanation {
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .explanation h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+
+        .explanation ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .explanation li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .explanation li:before {
+            content: "🔐";
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔐 RSA Digital Signature System</h1>
+            <p>Secure Message Authentication & Verification</p>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Key Generation Section -->
+            <div class="card">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                    </svg>
+                    Key Generation
+                </h2>
+                
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter username (e.g., Alice)" value="Alice">
+                </div>
+                
+                <div class="form-group">
+                    <label for="keySize">Key Size (bits):</label>
+                    <select id="keySize">
+                        <option value="10">10 bits (Demo)</option>
+                        <option value="12">12 bits (Demo)</option>
+                        <option value="14">14 bits (Demo)</option>
+                    </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Small sizes for educational purposes. Production uses 2048+ bits.
+                    </small>
+                </div>
+                
+                <button class="btn" onclick="generateKeys()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31.84 2.41 2 2.83V22h2v-2.17c1.16-.42 2-1.52 2-2.83 0-1.66-1.34-3-3-3zM20.5 6c-.28 0-.5.22-.5.5V8h-1V6.5c0-.83-.67-1.5-1.5-1.5S16 5.67 16 6.5V8h-1V6.5C15 4.57 16.57 3 18.5 3S22 4.57 22 6.5V8h1c.55 0 1 .45 1 1v9c0 .55-.45 1-1 1H16c-.55 0-1-.45-1-1V9c0-.55.45-1 1-1h5.5z"/>
+                    </svg>
+                    Generate RSA Keys
+                </button>
+                
+                <div id="keyResult"></div>
+            </div>
+
+            <!-- Message Signing Section -->
+            <div class="card">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    Sign Message
+                </h2>
+                
+                <div class="form-group">
+                    <label for="signerSelect">Signer:</label>
+                    <select id="signerSelect">
+                        <option value="">Select a user...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="messageToSign">Message to Sign:</label>
+                    <textarea id="messageToSign" placeholder="Enter your message here...">Hello, this is a secure message from Alice!</textarea>
+                </div>
+                
+                <button class="btn btn-success" onclick="signMessage()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                    </svg>
+                    Sign Message
+                </button>
+                
+                <div id="signResult"></div>
+            </div>
+        </div>
+
+        <!-- Verification Section -->
+        <div class="card full-width">
+            <h2>
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                Verify Digital Signature
+            </h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <div class="form-group">
+                        <label for="verifierSelect">Signer (Public Key Owner):</label>
+                        <select id="verifierSelect">
+                            <option value="">Select signer...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="messageToVerify">Message:</label>
+                        <textarea id="messageToVerify" placeholder="Enter the original message..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signatureToVerify">Digital Signature:</label>
+                        <input type="text" id="signatureToVerify" placeholder="Enter the digital signature...">
+                    </div>
+                    
+                    <button class="btn btn-danger" onclick="verifySignature()">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Verify Signature
+                    </button>
+                </div>
+                
+                <div id="verifyResult"></div>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="card full-width">
+            <div class="explanation">
+                <h3>🔍 How RSA Digital Signatures Work</h3>
+                <ul>
+                    <li><strong>Key Generation:</strong> Generate a public-private key pair using large prime numbers</li>
+                    <li><strong>Signing:</strong> Hash the message and encrypt the hash with the private key to create a signature</li>
+                    <li><strong>Verification:</strong> Decrypt the signature with the public key and compare with the message hash</li>
+                    <li><strong>Security:</strong> Only the private key holder can create valid signatures</li>
+                    <li><strong>Non-repudiation:</strong> The signer cannot deny signing the message</li>
+                    <li><strong>Integrity:</strong> Any message tampering will cause verification to fail</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let currentUsers = {};
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+        });
+
+        // Utility function to show loading state
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="loading"></div> Processing...';
+        }
+
+        // Utility function to make API calls
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'API call failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Load existing users and update dropdowns
+        async function loadUsers() {
+            try {
+                const result = await apiCall('/get-users');
+                currentUsers = result.data;
+                updateUserDropdowns();
+            } catch (error) {
+                console.log('No existing users found');
+            }
+        }
+
+        // Update dropdown menus with available users
+        function updateUserDropdowns() {
+            const signerSelect = document.getElementById('signerSelect');
+            const verifierSelect = document.getElementById('verifierSelect');
+            
+            // Clear existing options (except first)
+            signerSelect.innerHTML = '<option value="">Select a user...</option>';
+            verifierSelect.innerHTML = '<option value="">Select signer...</option>';
+            
+            // Add users to dropdowns
+            Object.keys(currentUsers).forEach(username => {
+                const option1 = new Option(username, username);
+                const option2 = new Option(username, username);
+                signerSelect.add(option1);
+                verifierSelect.add(option2);
+            });
+        }
+
+        // Generate RSA keys for a user
+        async function generateKeys() {
+            const username = document.getElementById('username').value.trim();
+            const keySize = parseInt(document.getElementById('keySize').value);
+            
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+            
+            showLoading('keyResult');
+            
+            try {
+                const result = await apiCall('/generate-keys', 'POST', {
+                    username: username,
+                    bits: keySize
+                });
+                
+                const data = result.data;
+                currentUsers[username] = {
+                    username: username,
+                    public_key: data.public_key
+                };
+                
+                updateUserDropdowns();
+                
+                // Display the generated keys
+                const keyDisplay = `
+                    <div class="result-box success">
+                        <div class="status-indicator success"></div>
+                        <strong>✅ Keys Generated Successfully for ${username}</strong>
+                    </div>
+                    
+                    <div class="key-display">
+                        <h4>🔑 Public Key (Share this with others):</h4>
+                        <div>n = ${data.public_key.n}</div>
+                        <div>e = ${data.public_key.e}</div>
+                    </div>
+                    
+                    <div class="key-display">
+                        <h4>🔐 Private Key (Keep this secret!):</h4>
+                        <div>n = ${data.private_key.n}</div>
+                        <div>d = ${data.private_key.d}</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <strong>🔢 Key Generation Details:</strong><br>
+                        Prime p = ${data.key_generation_details.p}<br>
+                        Prime q = ${data.key_generation_details.q}<br>
+                        n = p × q = ${data.key_generation_details.p} × ${data.key_generation_details.q} = ${data.public_key.n}<br>
+                        φ(n) = (p-1)(q-1) = ${data.key_generation_details.phi_n}<br>
+                        Public exponent e = ${data.key_generation_details.e}<br>
+                        Private exponent d = ${data.key_generation_details.d}
+                    </div>
+                `;
+                
+                document.getElementById('keyResult').innerHTML = keyDisplay;
+                
+            } catch (error) {
+                document.getElementById('keyResult').innerHTML = `
+                    <div class="result-box error">
+                        <div class="status-indicator error"></div>
+                        <strong>❌ Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Sign a message
+        async function signMessage() {
+            const signer = document.getElementById('signerSelect').value;
+            const message = document.getElementById('messageToSign').value.trim();
+            
+            if (!signer) {
+                alert('Please select a signer');
+                return;
+            }
+            
+            if (!message) {
+                alert('Please enter a message to sign');
+                return;
+            }
+            
+            showLoading('signResult');
+            
+            try {
+                const result = await apiCall('/sign-message', 'POST', {
+                    username: signer,
+                    message: message
+                });
+                
+                const data = result.data;
+                
+                // Display the signing result
+                const signDisplay = `
+                    <div class="result-box success">
+                        <div class="status-indicator success"></div>
+                        <strong>✅ Message Signed Successfully</strong>
+                    </div>
+                    
+                    <div class="key-display">
+                        <h4>📝 Original Message:</h4>
+                        <div style="color: #60a5fa;">"${data.original_message}"</div>
+                    </div>
+                    
+                    <div class="key-display">
+                        <h4>🔗 SHA-256 Hash:</h4>
+                        <div style="word-break: break-all; color: #fbbf24;">${data.message_hash.hash_hex}</div>
+                        <div style="margin-top: 5px; color: #a78bfa;">Hash as Integer: ${data.message_hash.hash_int}</div>
+                    </div>
+                    
+                    <div class="key-display">
+                        <h4>🔏 Digital Signature:</h4>
+                        <div style="color: #34d399; font-size: 14px; font-weight: bold;">${data.signature}</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <strong>🔢 Signing Process:</strong><br>
+                        1. Message hashed using SHA-256<br>
+                        2. Hash converted to integer: ${data.signing_details.hash_before_signing}<br>
+                        3. Signature = Hash^d mod n<br>
+                        4. Signature = ${data.signing_details.hash_before_signing}^${data.signing_details.private_key_d} mod ${data.signing_details.private_key_n}<br>
+                        5. Result: ${data.signature}
+                    </div>
+                    
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>📋 Copy for Verification:</strong><br>
+                        <button class="btn" onclick="copyToVerification('${signer}', '${message}', '${data.signature}')" style="margin-top: 10px;">
+                            Copy to Verification Section
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('signResult').innerHTML = signDisplay;
+                
+            } catch (error) {
+                document.getElementById('signResult').innerHTML = `
+                    <div class="result-box error">
+                        <div class="status-indicator error"></div>
+                        <strong>❌ Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Copy signed message details to verification section
+        function copyToVerification(signer, message, signature) {
+            document.getElementById('verifierSelect').value = signer;
+            document.getElementById('messageToVerify').value = message;
+            document.getElementById('signatureToVerify').value = signature;
+            
+            // Scroll to verification section
+            document.querySelector('.card.full-width').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+            
+            // Highlight the verification section briefly
+            const verifyCard = document.querySelector('.card.full-width');
+            verifyCard.style.boxShadow = '0 0 20px rgba(59, 130, 246, 0.5)';
+            setTimeout(() => {
+                verifyCard.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+            }, 2000);
+        }
+
+        // Verify a digital signature
+        async function verifySignature() {
+            const signer = document.getElementById('verifierSelect').value;
+            const message = document.getElementById('messageToVerify').value.trim();
+            const signature = document.getElementById('signatureToVerify').value.trim();
+            
+            if (!signer) {
+                alert('Please select the signer');
+                return;
+            }
+            
+            if (!message) {
+                alert('Please enter the message');
+                return;
+            }
+            
+            if (!signature) {
+                alert('Please enter the signature');
+                return;
+            }
+            
+            showLoading('verifyResult');
+            
+            try {
+                const result = await apiCall('/verify-signature', 'POST', {
+                    username: signer,
+                    message: message,
+                    signature: signature
+                });
+                
+                const data = result.data;
+                const isValid = data.is_valid;
+                
+                // Display verification result
+                const verifyDisplay = `
+                    <div class="verification-result ${isValid ? 'valid' : 'invalid'}">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">
+                            ${isValid ? '✅' : '❌'}
+                        </div>
+                        <div style="font-size: 1.2rem;">
+                            Signature ${isValid ? 'VALID' : 'INVALID'}
+                        </div>
+                        <div style="font-size: 0.9rem; margin-top: 10px; font-weight: normal;">
+                            ${isValid ? 'The message is authentic and has not been tampered with.' : 'The signature does not match the message or has been corrupted.'}
+                        </div>
+                    </div>
+                    
+                    <div class="key-display">
+                        <h4>📝 Verification Details:</h4>
+                        <div style="color: #60a5fa;">Signer: ${data.username}</div>
+                        <div style="color: #fbbf24;">Message Hash: ${data.verification_details.message_hash_info.hash_hex}</div>
+                        <div style="color: #a78bfa;">Computed Hash (as int): ${data.verification_details.computed_hash}</div>
+                        <div style="color: #34d399;">Decrypted Hash (from sig): ${data.verification_details.decrypted_hash}</div>
+                        <div style="color: ${isValid ? '#10b981' : '#ef4444'};">Match: ${isValid ? 'YES ✅' : 'NO ❌'}</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <strong>🔍 Verification Process:</strong><br>
+                        1. Received message hashed using SHA-256<br>
+                        2. Hash converted to integer: ${data.verification_details.computed_hash}<br>
+                        3. Signature decrypted using public key:<br>
+                        &nbsp;&nbsp;&nbsp;Decrypted = ${signature}^${data.verification_details.public_key_e} mod ${data.verification_details.public_key_n}<br>
+                        &nbsp;&nbsp;&nbsp;Result: ${data.verification_details.decrypted_hash}<br>
+                        4. Compare computed hash with decrypted hash<br>
+                        5. ${data.verification_details.computed_hash} ${isValid ? '==' : '!='} ${data.verification_details.decrypted_hash} → ${isValid ? 'VALID' : 'INVALID'}
+                    </div>
+                    
+                    ${!isValid ? `
+                    <div style="background: #fef2f2; border: 2px solid #fecaca; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong style="color: #991b1b;">⚠️ Possible Reasons for Invalid Signature:</strong><br>
+                        <ul style="margin-top: 10px; color: #7f1d1d;">
+                            <li>• Message has been modified after signing</li>
+                            <li>• Signature was created by someone else</li>
+                            <li>• Signature was corrupted during transmission</li>
+                            <li>• Wrong public key used for verification</li>
+                        </ul>
+                    </div>
+                    ` : `
+                    <div style="background: #f0fdf4; border: 2px solid #bbf7d0; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong style="color: #166534;">🛡️ Security Guarantees:</strong><br>
+                        <ul style="margin-top: 10px; color: #14532d;">
+                            <li>• <strong>Authenticity:</strong> Message was signed by ${data.username}</li>
+                            <li>• <strong>Integrity:</strong> Message has not been modified</li>
+                            <li>• <strong>Non-repudiation:</strong> ${data.username} cannot deny signing this message</li>
+                        </ul>
+                    </div>
+                    `}
+                `;
+                
+                document.getElementById('verifyResult').innerHTML = verifyDisplay;
+                
+            } catch (error) {
+                document.getElementById('verifyResult').innerHTML = `
+                    <div class="result-box error">
+                        <div class="status-indicator error"></div>
+                        <strong>❌ Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-fill demo data
+        function fillDemoData() {
+            document.getElementById('username').value = 'Alice';
+            document.getElementById('messageToSign').value = 'This is a secure message from Alice!';
+        }
+
+        // Test signature tampering (for educational purposes)
+        function testSignatureTampering() {
+            const message = document.getElementById('messageToVerify').value;
+            if (message) {
+                // Slightly modify the message to demonstrate signature failure
+                const tamperedMessage = message + ' (TAMPERED)';
+                document.getElementById('messageToVerify').value = tamperedMessage;
+                alert('Message has been modified to demonstrate signature failure. Click Verify to see the result.');
+            }
+        }
+
+        // Add a button for demo purposes (you can add this to the HTML if needed)
+        function addDemoButtons() {
+            const demoButtons = `
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn" onclick="fillDemoData()" style="margin-right: 10px;">
+                        Fill Demo Data
+                    </button>
+                    <button class="btn btn-danger" onclick="testSignatureTampering()">
+                        Test Message Tampering
+                    </button>
+                </div>
+            `;
+            // You can insert this where appropriate in your HTML
+        }
+    </script>
+</body>
+</html>
