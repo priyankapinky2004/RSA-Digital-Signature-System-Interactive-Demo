@@ -2,8 +2,6 @@
 
 A comprehensive web-based demonstration of RSA Digital Signature implementation for secure message authentication and verification. This project implements RSA cryptography from scratch without external crypto libraries, providing educational insight into the mathematical foundations of digital signatures.
 
-![RSA Digital Signature System](screenshots/main-interface.png)
-
 ## 🎯 Overview
 
 This system demonstrates how RSA digital signatures work in practice, allowing users to:
@@ -143,7 +141,7 @@ The system implements the following security guarantees:
 - **Integrity**: Detects any tampering with the original message
 - **Non-repudiation**: Signer cannot deny signing the message
 
-![Security Guarantees](screenshots/security-guarantees.png)
+<img src="screenshots/security-guarantees.png" alt="Security Guarantees" width="300"/>
 
 ## 🧮 Mathematical Implementation
 
@@ -206,8 +204,6 @@ curl -X POST http://localhost:5000/api/verify-signature \
 2. Message is modified during transmission
 3. Bob attempts verification with original signature
 4. ❌ Verification fails - tampering detected
-
-![Demo Scenarios](screenshots/demo-scenarios.png)
 
 ## 🔧 Development
 
@@ -371,5 +367,3 @@ If you encounter any issues or have questions:
 ---
 
 **⭐ If you found this project helpful, please give it a star!**
-
-![Footer](screenshots/project-footer.png)
